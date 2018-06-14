@@ -45,25 +45,28 @@ function menu() {
 
 function onePlayerGame(xName) {
   printBoard(board);
-  console.log(xName + ' please choose your next move. Choose one of the remaining numbers.')
+  console.log(xName + ' Please choose your next move. Choose one of the remaining numbers.')
   process.stdin.once('data', (move) => {
     move = move.toString().trim();
     if (isEntryValid(move)) {
       board[board.indexOf(move)] = 'X';
+      remainingMoves.splice((move - 1),1);
       if (checkVictory()) {
         console.log(xName + ' you won!!');
         printBoard(board);
         process.exit();
       }
       turnCount++;
-      remainingMoves.splice((move - 1),1);
+    
       if (turnCount > 9) {
         console.log('It is a tie!!');
         printBoard(board);
         process.exit();
       }
       if (turnCount % 2 === 0) {
-       board[board.indexOf(getRandom(remainingMoves))] = 'O';
+       ranSelection = getRandom(remainingMoves);
+       board[board.indexOf(ranSelection)] = 'O';
+       remainingMoves.splice((ranSelection - 1),1);
        turnCount++;
       }
       onePlayerGame(xName);
