@@ -21,25 +21,30 @@ function menu() {
   console.log("Would you like to play a one or two player game? (Enter 1 or 2)");
   process.stdin.once('data', (oneOrTwo) => {
     oneOrTwo = oneOrTwo.toString().trim();
-    oneOrTwo = parseInt(oneOrTwo);
-    oneOrTwoPlayer = oneOrTwo;
-    console.log("Player X, what is your name?");
-    process.stdin.once('data', (xName) => {
-      xName = xName.toString().trim();
-      console.log("Hello " + xName);
-      if (oneOrTwoPlayer === 2) {
-        console.log("Player Y, what is your name?");
-        process.stdin.once('data', (yName) => {
-          yName = yName.toString().trim();
-          console.log("Hello " + yName);
-          twoPlayerGame(xName, yName);
+    if (isPlayerNumberValid(oneOrTwo)) {
+      oneOrTwo = parseInt(oneOrTwo);
+      oneOrTwoPlayer = oneOrTwo;
+      console.log("Player X, what is your name?");
+      process.stdin.once('data', (xName) => {
+        xName = xName.toString().trim();
+        console.log("Hello " + xName);
+        if (oneOrTwoPlayer === 2) {
+          console.log("Player Y, what is your name?");
+          process.stdin.once('data', (yName) => {
+            yName = yName.toString().trim();
+            console.log("Hello " + yName);
+            twoPlayerGame(xName, yName);
+          }
+          )
+        } else if (oneOrTwoPlayer === 1) {
+          onePlayerGame(xName);
         }
-        )
-      } else if (oneOrTwoPlayer === 1) {
-        onePlayerGame(xName);
-      }
 
-    })
+      })
+    } else {
+      menu()
+    }
+
   })
 }
 
@@ -216,6 +221,17 @@ function isEntryValid(text) {
   }
   if (!board.includes(text)) {
     console.log('That space has already been taken please choose another.');
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function isPlayerNumberValid(oneOrTwo) {
+  let regex2 = /[1-2]/
+
+  if (!oneOrTwo.match(regex2)) {
+    console.log("That is not a valid entry. Please try again.");
     return false;
   } else {
     return true;
