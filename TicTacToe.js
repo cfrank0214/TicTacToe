@@ -50,24 +50,30 @@ function onePlayerGame(xName) {
     move = move.toString().trim();
     if (isEntryValid(move)) {
       board[board.indexOf(move)] = 'X';
-      remainingMoves.splice((move - 1),1);
+      remainingMoves = remainingMoves.filter(item => item !== move)
       if (checkVictory()) {
         console.log(xName + ' you won!!');
         printBoard(board);
         process.exit();
       }
       turnCount++;
-    
+
       if (turnCount > 9) {
         console.log('It is a tie!!');
         printBoard(board);
         process.exit();
       }
       if (turnCount % 2 === 0) {
-       ranSelection = getRandom(remainingMoves);
-       board[board.indexOf(ranSelection)] = 'O';
-       remainingMoves.splice((ranSelection - 1),1);
-       turnCount++;
+        ranSelection = getRandom(remainingMoves);
+        board[board.indexOf(ranSelection)] = 'O';
+        remainingMoves = remainingMoves.filter(item => item !== ranSelection)
+        console.log(remainingMoves);
+        if (checkVictory()) {
+          console.log('Ha Ha ' + xName + ' you have been defeated!!');
+          printBoard(board);
+          process.exit();
+        }
+        turnCount++;
       }
       onePlayerGame(xName);
     } else {
@@ -78,8 +84,8 @@ function onePlayerGame(xName) {
 }
 
 function getRandom(remainingMoves) {
-    let ranSelection = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
-    return ranSelection;
+  let ranSelection = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
+  return ranSelection;
 }
 
 
@@ -93,7 +99,7 @@ function getRandom(remainingMoves) {
 function twoPlayerGame(xName, yName) {
   printBoard(board);
   if (currentTurn === 'X') {
-    curPlayName = xName; 
+    curPlayName = xName;
   } else {
     curPlayName = yName;
   }
