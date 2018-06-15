@@ -110,7 +110,7 @@ function onePlayerGame(playerXName) {
 }
 
 /**
- * Fuction that accepts imput from the players on which box they want to chose
+ * Fuction that accepts input from the players on which box they want to chose
  * then updates counter and board array. 
  */
 function twoPlayerGame(playerXName, playerOName) {
@@ -151,7 +151,7 @@ function twoPlayerGame(playerXName, playerOName) {
 }
 
 /**
- * Function to draw board in console.
+ * Function that draws board in console.
  */
 function printBoard(board) {
   console.log("           ")
@@ -167,37 +167,36 @@ function printBoard(board) {
 * Function to check if a player has won the game. Then updates board appropriately.
 */
 function checkVictory() {
-  if (topRowWin()) {      //if horizontal top row positions equal each other
-    horizontalCrossOut(0);
+  if (topRowWin()) {     
     return true;
   }
-  if (middleRowWin()) {      //if horizontal middle row positions equal each other
+  if (middleRowWin()) {      
     horizontalCrossOut(3);
     return true;
   }
-  if (bottomRowWin()) {      //if horizontal bottom row positions equal each other
+  if (bottomRowWin()) {      
     horizontalCrossOut(6);
     return true;
   }
-  if (leftColumnWin()) {      //if vertical left column positions equal each other
+  if (leftColumnWin()) {      
     verticalCrossOut(0);
     return true;
   }
-  if (middleColumnCrossOut()) {      //if vertical middle column positions equal each other
+  if (middleColumnCrossOut()) {     
     verticalCrossOut(1);
     return true;
   }
-  if (rightColumnCrossOut()) {      //if vertical right column positions equal each other
+  if (rightColumnCrossOut()) {      
     verticalCrossOut(2);
     return true;
   }
-  if (topLeftBottomRightCrossOut()) {      //if diagonal top left to bottom right positions equal each other
+  if (topLeftBottomRightCrossOut()) {      
     board[0] = '\\'
     board[4] = '\\'
     board[8] = '\\'
     return true;
   }
-  if (topRightBottomLeftCrossOut()) {      //if diagonal top right to bottom left positions equal each other
+  if (topRightBottomLeftCrossOut()) {     
     board[6] = '/'
     board[4] = '/'
     board[2] = '/'
