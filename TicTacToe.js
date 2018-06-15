@@ -8,39 +8,37 @@ let board = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 let remainingMoves = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 let turnCount = 1;
 let currentTurn = 'X';
-let oneOrTwoPlayer = 2;
-let curPlayName = '';
-let xName = '';
-let yName = '';
+let numberOfPlayers = 2;
+let currentPlayerName = '';
+let playerXName = '';
+let playerOName = '';
 
 
 /**
 * Console based menu for user to select whether they want to play
 * a two player game or against the computer.
 */
-
 function startGamePlay() {
-  ///1 or 2 player?
   console.log("Would you like to play a one or two player game? (Enter 1 or 2)");
-  process.stdin.once('data', (oneOrTwo) => {
-    oneOrTwo = oneOrTwo.toString().trim();
-    if (isPlayerNumberValid(oneOrTwo)) {
-      oneOrTwo = parseInt(oneOrTwo);
-      oneOrTwoPlayer = oneOrTwo;
+  process.stdin.once('data', (input) => {
+    userSelectionOneOrTwo = input.toString().trim();
+    if (isPlayerNumberValid(userSelectionOneOrTwo)) {
+      userSelectionOneOrTwo = parseInt(userSelectionOneOrTwo);
+      numberOfPlayers = userSelectionOneOrTwo;
       console.log("Player X, what is your name?");
-      process.stdin.once('data', (xName) => {
-        xName = xName.toString().trim();
-        console.log("Hello " + xName);
-        if (oneOrTwoPlayer === 2) {
-          console.log("Player Y, what is your name?");
-          process.stdin.once('data', (yName) => {
-            yName = yName.toString().trim();
-            console.log("Hello " + yName);
-            twoPlayerGame(xName, yName);
+      process.stdin.once('data', (playerXName) => {
+        playerXName = playerXName.toString().trim();
+        console.log("Hello " + playerXName);
+        if (numberOfPlayers === 2) {
+          console.log("Player O, what is your name?");
+          process.stdin.once('data', (playerOName) => {
+            playerOName = playerOName.toString().trim();
+            console.log("Hello " + playerOName);
+            twoPlayerGame(playerXName, playerOName);
           }
           )
-        } else if (oneOrTwoPlayer === 1) {
-          onePlayerGame(xName);
+        } else if (numberOfPlayers === 1) {
+          onePlayerGame(playerXName);
         }
 
       })
@@ -56,16 +54,16 @@ function startGamePlay() {
  * for now the computer chooses random space from an array of remaining spaces
  */
 
-function onePlayerGame(xName) {
+function onePlayerGame(playerXName) {
   printBoard(board);
-  console.log(xName + ' Please choose your next move. Choose one of the remaining numbers.')
+  console.log(playerXName + ' Please choose your next move. Choose one of the remaining numbers.')
   process.stdin.once('data', (move) => {
     move = move.toString().trim();
     if (isEntryValid(move)) {
       board[board.indexOf(move)] = 'X';
       remainingMoves = remainingMoves.filter(item => item !== move)
       if (checkVictory()) {
-        console.log(xName + ' you won!!');
+        console.log(playerXName + ' you won!!');
         printBoard(board);
         process.exit();
       }
@@ -81,15 +79,15 @@ function onePlayerGame(xName) {
         board[board.indexOf(ranSelection)] = 'O';
         remainingMoves = remainingMoves.filter(item => item !== ranSelection)
         if (checkVictory()) {
-          console.log('Ha Ha ' + xName + ' you have been defeated!!');
+          console.log('Ha Ha ' + playerXName + ' you have been defeated!!');
           printBoard(board);
           process.exit();
         }
         turnCount++;
       }
-      onePlayerGame(xName);
+      onePlayerGame(playerXName);
     } else {
-      onePlayerGame(xName);
+      onePlayerGame(playerXName);
     }
   });
 
@@ -100,22 +98,22 @@ function onePlayerGame(xName) {
  * then updates counter and board array. 
  */
 
-function twoPlayerGame(xName, yName) {
+function twoPlayerGame(playerXName, playerOName) {
   printBoard(board);
   if (currentTurn === 'X') {
-    curPlayName = xName;
+    currentPlayerName = playerXName;
   } else {
-    curPlayName = yName;
+    currentPlayerName = playerOName;
   }
 
-  console.log(curPlayName + ' please choose your next move. Choose one of the remaining numbers.')
+  console.log(currentPlayerName + ' please choose your next move. Choose one of the remaining numbers.')
   process.stdin.removeAllListeners('data');
   process.stdin.once('data', (move) => {
     move = move.toString().trim();
     if (isEntryValid(move)) {
       board[board.indexOf(move)] = currentTurn;
       if (checkVictory()) {
-        console.log(curPlayName + ' you won!!');
+        console.log(currentPlayerName + ' you won!!');
         printBoard(board);
         process.exit();
       }
@@ -130,9 +128,9 @@ function twoPlayerGame(xName, yName) {
       } else {
         currentTurn = "O"
       }
-      twoPlayerGame();
+      twoPlayerGame(playerXName, playerOName);
     } else {
-      twoPlayerGame();
+      twoPlayerGame(playerXName, playerOName);
     }
   });
 
@@ -239,13 +237,16 @@ function getRandom(remainingMoves) {
 * Checks if input from the user is valid regarding whether they want two player or play against the computer.
 */
 
-function isPlayerNumberValid(oneOrTwo) {
+function isPlayerNumberValid(userSelectionOneOrTwo) {
   let regex2 = /[1-2]/
 
-  if (!oneOrTwo.match(regex2)) {
+  if (!userSelectionOneOrTwo.match(regex2)) {
     console.log("That is not a valid entry. Please try again.");
     return false;
   } else {
     return true;
   }
 }
+
+console.log("Tic Tac Toe, three in a row!!");
+startGamePlay();
