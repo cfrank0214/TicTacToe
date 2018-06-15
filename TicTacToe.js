@@ -5,11 +5,14 @@
  */
 
 let board = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-let remainingMoves = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+let availableSpace = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
 let turnCount = 1;
-let currentTurn = 'X';
 let numberOfPlayers = 2;
+
 let currentPlayerName = '';
+let currentPlayersTurn = 'X';
+
 let playerXName = '';
 let playerOName = '';
 
@@ -22,46 +25,59 @@ function startGamePlay() {
   console.log("Would you like to play a one or two player game? (Enter 1 or 2)");
   process.stdin.once('data', (input) => {
     userSelectionOneOrTwo = input.toString().trim();
-    if (isPlayerNumberValid(userSelectionOneOrTwo)) {
-      userSelectionOneOrTwo = parseInt(userSelectionOneOrTwo);
-      numberOfPlayers = userSelectionOneOrTwo;
-      console.log("Player X, what is your name?");
-      process.stdin.once('data', (playerXName) => {
-        playerXName = playerXName.toString().trim();
-        console.log("Hello " + playerXName);
-        if (numberOfPlayers === 2) {
-          console.log("Player O, what is your name?");
-          process.stdin.once('data', (playerOName) => {
-            playerOName = playerOName.toString().trim();
-            console.log("Hello " + playerOName);
-            twoPlayerGame(playerXName, playerOName);
-          }
-          )
-        } else if (numberOfPlayers === 1) {
-          onePlayerGame(playerXName);
-        }
-
-      })
-    } else {
-      startGamePlay()
-    }
+    collectingPlayerName(userSelectionOneOrTwo);
 
   })
+}
+
+/**
+* Asking users to input their name 
+*/
+function collectingPlayerName(numberOfPlayers) {
+  if (isPlayerNumberValid(numberOfPlayers)) {
+    numberOfPlayers = parseInt(numberOfPlayers);
+    console.log("Player X, what is your name?");
+    process.stdin.once('data', (input) => {
+      playerXName = input.toString().trim();
+      console.log("Hello " + playerXName);
+      gameType(numberOfPlayers);
+    });
+  }
+  else {
+    // return to start menu if invalid data
+    startGamePlay();
+  }
+}
+
+/**
+* Selection one to two player game. 
+*/
+function gameType(numberOfPlayers) {
+  if (numberOfPlayers === 2) {
+    console.log("Player O, what is your name?");
+    process.stdin.once('data', (input) => {
+      playerOName = input.toString().trim();
+      console.log("Hello " + playerOName);
+      twoPlayerGame(playerXName, playerOName);
+    });
+  }
+  else if (numberOfPlayers === 1) {
+    onePlayerGame(playerXName);
+  }
 }
 
 /**
  * Fuction where one players plays against the computer.
  * for now the computer chooses random space from an array of remaining spaces
  */
-
 function onePlayerGame(playerXName) {
   printBoard(board);
-  console.log(playerXName + ' Please choose your next move. Choose one of the remaining numbers.')
+  console.log(playerXName + ' p8lease choose your next move. Choose one of the remaining numbers.')
   process.stdin.once('data', (move) => {
     move = move.toString().trim();
     if (isEntryValid(move)) {
       board[board.indexOf(move)] = 'X';
-      remainingMoves = remainingMoves.filter(item => item !== move)
+      availableSpace = availableSpace.filter(item => item !== move)
       if (checkVictory()) {
         console.log(playerXName + ' you won!!');
         printBoard(board);
@@ -75,9 +91,9 @@ function onePlayerGame(playerXName) {
         process.exit();
       }
       if (turnCount % 2 === 0) {
-        ranSelection = getRandom(remainingMoves);
+        ranSelection = getRandom(availableSpace);
         board[board.indexOf(ranSelection)] = 'O';
-        remainingMoves = remainingMoves.filter(item => item !== ranSelection)
+        availableSpace = availableSpace.filter(item => item !== ranSelection)
         if (checkVictory()) {
           console.log('Ha Ha ' + playerXName + ' you have been defeated!!');
           printBoard(board);
@@ -94,24 +110,22 @@ function onePlayerGame(playerXName) {
 }
 
 /**
- * Fuction that acepts imput from the players on which box they want to chose
+ * Fuction that accepts imput from the players on which box they want to chose
  * then updates counter and board array. 
  */
-
 function twoPlayerGame(playerXName, playerOName) {
   printBoard(board);
-  if (currentTurn === 'X') {
+  if (currentPlayersTurn === 'X') {
     currentPlayerName = playerXName;
   } else {
     currentPlayerName = playerOName;
   }
-
   console.log(currentPlayerName + ' please choose your next move. Choose one of the remaining numbers.')
   process.stdin.removeAllListeners('data');
-  process.stdin.once('data', (move) => {
-    move = move.toString().trim();
-    if (isEntryValid(move)) {
-      board[board.indexOf(move)] = currentTurn;
+  process.stdin.once('data', (input) => {
+    currentPositionSelection = input.toString().trim();
+    if (isEntryValid(currentPositionSelection)) {
+      board[board.indexOf(currentPositionSelection)] = currentPlayersTurn;
       if (checkVictory()) {
         console.log(currentPlayerName + ' you won!!');
         printBoard(board);
@@ -124,9 +138,9 @@ function twoPlayerGame(playerXName, playerOName) {
         process.exit();
       }
       if (turnCount % 2 !== 0) {
-        currentTurn = 'X'
+        currentPlayersTurn = 'X'
       } else {
-        currentTurn = "O"
+        currentPlayersTurn = "O"
       }
       twoPlayerGame(playerXName, playerOName);
     } else {
@@ -139,7 +153,6 @@ function twoPlayerGame(playerXName, playerOName) {
 /**
  * Function to draw board in console.
  */
-
 function printBoard(board) {
   console.log("           ")
   console.log(" " + board[0] + " | " + board[1] + " | " + board[2] + " ")
@@ -153,51 +166,38 @@ function printBoard(board) {
 /**
 * Function to check if a player has won the game. Then updates board appropriately.
 */
-
 function checkVictory() {
-  if ((board[0] === board[1]) && (board[1] === board[2])) {      //if horizontal top row positions equal each other
-    board[0] = '-'
-    board[1] = '-'
-    board[2] = '-'
+  if (topRowWin()) {      //if horizontal top row positions equal each other
+    horizontalCrossOut(0);
     return true;
   }
-  if ((board[3] === board[4]) && (board[4] === board[5])) {      //if horizontal middle row positions equal each other
-    board[3] = '-'
-    board[4] = '-'
-    board[5] = '-'
+  if (middleRowWin()) {      //if horizontal middle row positions equal each other
+    horizontalCrossOut(3);
     return true;
   }
-  if ((board[6] === board[7]) && (board[7] === board[8])) {      //if horizontal bottom row positions equal each other
-    board[6] = '-'
-    board[7] = '-'
-    board[8] = '-'
+  if (bottomRowWin()) {      //if horizontal bottom row positions equal each other
+    horizontalCrossOut(6);
     return true;
   }
-  if ((board[0] === board[3]) && (board[3] === board[6])) {      //if vertical left column positions equal each other
-    board[0] = '|'
-    board[3] = '|'
-    board[6] = '|'
+  if (leftColumnWin()) {      //if vertical left column positions equal each other
+    verticalCrossOut(0);
     return true;
   }
-  if ((board[1] === board[4]) && (board[4] === board[7])) {      //if vertical middle column positions equal each other
-    board[1] = '|'
-    board[4] = '|'
-    board[7] = '|'
+  if (middleColumnCrossOut()) {      //if vertical middle column positions equal each other
+    verticalCrossOut(1);
     return true;
   }
-  if ((board[2] === board[5]) && (board[5] === board[8])) {      //if vertical right column positions equal each other
-    board[2] = '|'
-    board[5] = '|'
-    board[8] = '|'
+  if (rightColumnCrossOut()) {      //if vertical right column positions equal each other
+    verticalCrossOut(2);
     return true;
   }
-  if ((board[0] === board[4]) && (board[4] === board[8])) {      //if diagonal top left to bottom right positions equal each other
+  if (topLeftBottomRightCrossOut()) {      //if diagonal top left to bottom right positions equal each other
     board[0] = '\\'
     board[4] = '\\'
     board[8] = '\\'
     return true;
   }
-  if ((board[6] === board[4]) && (board[4] === board[2])) {      //if diagonal top right to bottom left positions equal each other
+  if (topRightBottomLeftCrossOut()) {      //if diagonal top right to bottom left positions equal each other
     board[6] = '/'
     board[4] = '/'
     board[2] = '/'
@@ -206,9 +206,55 @@ function checkVictory() {
 }
 
 /**
+* These functions cross out the winning combination
+*/
+function horizontalCrossOut(index) {
+  board[index] = '-';
+  board[index+1] = '-';
+  board[index+2] = '-';
+}
+
+function topRowWin() {
+  return (board[0] === board[1]) && (board[1] === board[2]);
+}
+
+function middleRowWin() {
+  return (board[3] === board[4]) && (board[4] === board[5]);
+}
+
+function bottomRowWin() {
+  return (board[6] === board[7]) && (board[7] === board[8]);
+}
+
+function verticalCrossOut(index) {
+  board[index] = '|';
+  board[index+3] = '|';
+  board[index+6] = '|';
+}
+
+function leftColumnWin() {
+  return (board[0] === board[3]) && (board[3] === board[6]);
+}
+
+function middleColumnCrossOut() {
+  return (board[1] === board[4]) && (board[4] === board[7]);
+}
+
+function rightColumnCrossOut() {
+  return (board[2] === board[5]) && (board[5] === board[8]);
+}
+
+function topRightBottomLeftCrossOut() {
+  return (board[6] === board[4]) && (board[4] === board[2]);
+}
+
+function topLeftBottomRightCrossOut() {
+  return (board[0] === board[4]) && (board[4] === board[8]);
+}
+
+/**
 * Checks if input from the user is valid for game play.
 */
-
 function isEntryValid(text) {
   let regex1 = /[1-9]/
 
@@ -228,8 +274,8 @@ function isEntryValid(text) {
 * Random selection from an array of remaing boxes or moves.
 */
 
-function getRandom(remainingMoves) {
-  let ranSelection = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
+function getRandom(availableSpace) {
+  let ranSelection = availableSpace[Math.floor(Math.random() * availableSpace.length)];
   return ranSelection;
 }
 
