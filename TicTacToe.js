@@ -82,7 +82,6 @@ function onePlayerGame(xName) {
         ranSelection = getRandom(remainingMoves);
         board[board.indexOf(ranSelection)] = 'O';
         remainingMoves = remainingMoves.filter(item => item !== ranSelection)
-        console.log(remainingMoves);
         if (checkVictory()) {
           console.log('Ha Ha ' + xName + ' you have been defeated!!');
           printBoard(board);
