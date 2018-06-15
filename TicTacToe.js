@@ -48,6 +48,11 @@ function menu() {
   })
 }
 
+/**
+ * Fuction where one players plays against the computer.
+ * for now the computer chooses random space from an array of remaining spaces
+ */
+
 function onePlayerGame(xName) {
   printBoard(board);
   console.log(xName + ' Please choose your next move. Choose one of the remaining numbers.')
@@ -88,18 +93,10 @@ function onePlayerGame(xName) {
 
 }
 
-function getRandom(remainingMoves) {
-  let ranSelection = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
-  return ranSelection;
-}
-
-
-
-
-// /**
-//  * Fuction that acepts imput from player on which box they want to chose
-//  * then updates counter and board array. 
-//  */
+/**
+ * Fuction that acepts imput from the players on which box they want to chose
+ * then updates counter and board array. 
+ */
 
 function twoPlayerGame(xName, yName) {
   printBoard(board);
@@ -226,6 +223,19 @@ function isEntryValid(text) {
     return true;
   }
 }
+
+/**
+* Random selection from an array of remaing boxes or moves.
+*/
+
+function getRandom(remainingMoves) {
+  let ranSelection = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
+  return ranSelection;
+}
+
+/**
+* Checks if input from the user is valid regarding whether they want two player or play against the computer.
+*/
 
 function isPlayerNumberValid(oneOrTwo) {
   let regex2 = /[1-2]/
