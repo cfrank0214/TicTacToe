@@ -5,69 +5,81 @@
  */
 
 let board = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-let remainingMoves = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-let turnCount = 1;
-let currentTurn = 'X';
-let oneOrTwoPlayer = 2;
-let curPlayName = '';
-let xName = '';
-let yName = '';
+let availableSpace = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-console.log("Tic Tac Toe, three in a row!!");
-menu();
+let turnCount = 1;
+let numberOfPlayers = 2;
+
+let currentPlayerName = '';
+let currentPlayersTurn = 'X';
+
+let playerXName = '';
+let playerOName = '';
+
 
 /**
 * Console based menu for user to select whether they want to play
 * a two player game or against the computer.
 */
-
-function menu() {
-  ///1 or 2 player?
+function startGamePlay() {
   console.log("Would you like to play a one or two player game? (Enter 1 or 2)");
-  process.stdin.once('data', (oneOrTwo) => {
-    oneOrTwo = oneOrTwo.toString().trim();
-    if (isPlayerNumberValid(oneOrTwo)) {
-      oneOrTwo = parseInt(oneOrTwo);
-      oneOrTwoPlayer = oneOrTwo;
-      console.log("Player X, what is your name?");
-      process.stdin.once('data', (xName) => {
-        xName = xName.toString().trim();
-        console.log("Hello " + xName);
-        if (oneOrTwoPlayer === 2) {
-          console.log("Player Y, what is your name?");
-          process.stdin.once('data', (yName) => {
-            yName = yName.toString().trim();
-            console.log("Hello " + yName);
-            twoPlayerGame(xName, yName);
-          }
-          )
-        } else if (oneOrTwoPlayer === 1) {
-          onePlayerGame(xName);
-        }
-
-      })
-    } else {
-      menu()
-    }
+  process.stdin.once('data', (input) => {
+    userSelectionOneOrTwo = input.toString().trim();
+    collectingPlayerName(userSelectionOneOrTwo);
 
   })
+}
+
+/**
+* Asking users to input their name 
+*/
+function collectingPlayerName(numberOfPlayers) {
+  if (isPlayerNumberValid(numberOfPlayers)) {
+    numberOfPlayers = parseInt(numberOfPlayers);
+    console.log("Player X, what is your name?");
+    process.stdin.once('data', (input) => {
+      playerXName = input.toString().trim();
+      console.log("Hello " + playerXName);
+      gameType(numberOfPlayers);
+    });
+  }
+  else {
+    // return to start menu if invalid data
+    startGamePlay();
+  }
+}
+
+/**
+* Selection one to two player game. 
+*/
+function gameType(numberOfPlayers) {
+  if (numberOfPlayers === 2) {
+    console.log("Player O, what is your name?");
+    process.stdin.once('data', (input) => {
+      playerOName = input.toString().trim();
+      console.log("Hello " + playerOName);
+      twoPlayerGame(playerXName, playerOName);
+    });
+  }
+  else if (numberOfPlayers === 1) {
+    onePlayerGame(playerXName);
+  }
 }
 
 /**
  * Fuction where one players plays against the computer.
  * for now the computer chooses random space from an array of remaining spaces
  */
-
-function onePlayerGame(xName) {
+function onePlayerGame(playerXName) {
   printBoard(board);
-  console.log(xName + ' Please choose your next move. Choose one of the remaining numbers.')
+  console.log(playerXName + ' p8lease choose your next move. Choose one of the remaining numbers.')
   process.stdin.once('data', (move) => {
     move = move.toString().trim();
     if (isEntryValid(move)) {
       board[board.indexOf(move)] = 'X';
-      remainingMoves = remainingMoves.filter(item => item !== move)
+      availableSpace = availableSpace.filter(item => item !== move)
       if (checkVictory()) {
-        console.log(xName + ' you won!!');
+        console.log(playerXName + ' you won!!');
         printBoard(board);
         process.exit();
       }
@@ -79,45 +91,43 @@ function onePlayerGame(xName) {
         process.exit();
       }
       if (turnCount % 2 === 0) {
-        ranSelection = getRandom(remainingMoves);
+        ranSelection = getRandom(availableSpace);
         board[board.indexOf(ranSelection)] = 'O';
-        remainingMoves = remainingMoves.filter(item => item !== ranSelection)
+        availableSpace = availableSpace.filter(item => item !== ranSelection)
         if (checkVictory()) {
-          console.log('Ha Ha ' + xName + ' you have been defeated!!');
+          console.log('Ha Ha ' + playerXName + ' you have been defeated!!');
           printBoard(board);
           process.exit();
         }
         turnCount++;
       }
-      onePlayerGame(xName);
+      onePlayerGame(playerXName);
     } else {
-      onePlayerGame(xName);
+      onePlayerGame(playerXName);
     }
   });
 
 }
 
 /**
- * Fuction that acepts imput from the players on which box they want to chose
+ * Fuction that accepts input from the players on which box they want to chose
  * then updates counter and board array. 
  */
-
-function twoPlayerGame(xName, yName) {
+function twoPlayerGame(playerXName, playerOName) {
   printBoard(board);
-  if (currentTurn === 'X') {
-    curPlayName = xName;
+  if (currentPlayersTurn === 'X') {
+    currentPlayerName = playerXName;
   } else {
-    curPlayName = yName;
+    currentPlayerName = playerOName;
   }
-
-  console.log(curPlayName + ' please choose your next move. Choose one of the remaining numbers.')
+  console.log(currentPlayerName + ' please choose your next move. Choose one of the remaining numbers.')
   process.stdin.removeAllListeners('data');
-  process.stdin.once('data', (move) => {
-    move = move.toString().trim();
-    if (isEntryValid(move)) {
-      board[board.indexOf(move)] = currentTurn;
+  process.stdin.once('data', (input) => {
+    currentPositionSelection = input.toString().trim();
+    if (isEntryValid(currentPositionSelection)) {
+      board[board.indexOf(currentPositionSelection)] = currentPlayersTurn;
       if (checkVictory()) {
-        console.log(curPlayName + ' you won!!');
+        console.log(currentPlayerName + ' you won!!');
         printBoard(board);
         process.exit();
       }
@@ -128,22 +138,21 @@ function twoPlayerGame(xName, yName) {
         process.exit();
       }
       if (turnCount % 2 !== 0) {
-        currentTurn = 'X'
+        currentPlayersTurn = 'X'
       } else {
-        currentTurn = "O"
+        currentPlayersTurn = "O"
       }
-      twoPlayerGame();
+      twoPlayerGame(playerXName, playerOName);
     } else {
-      twoPlayerGame();
+      twoPlayerGame(playerXName, playerOName);
     }
   });
 
 }
 
 /**
- * Function to draw board in console.
+ * Function that draws board in console.
  */
-
 function printBoard(board) {
   console.log("           ")
   console.log(" " + board[0] + " | " + board[1] + " | " + board[2] + " ")
@@ -157,51 +166,37 @@ function printBoard(board) {
 /**
 * Function to check if a player has won the game. Then updates board appropriately.
 */
-
 function checkVictory() {
-  if ((board[0] === board[1]) && (board[1] === board[2])) {      //if horizontal top row positions equal each other
-    board[0] = '-'
-    board[1] = '-'
-    board[2] = '-'
+  if (topRowWin()) {     
     return true;
   }
-  if ((board[3] === board[4]) && (board[4] === board[5])) {      //if horizontal middle row positions equal each other
-    board[3] = '-'
-    board[4] = '-'
-    board[5] = '-'
+  if (middleRowWin()) {      
+    horizontalCrossOut(3);
     return true;
   }
-  if ((board[6] === board[7]) && (board[7] === board[8])) {      //if horizontal bottom row positions equal each other
-    board[6] = '-'
-    board[7] = '-'
-    board[8] = '-'
+  if (bottomRowWin()) {      
+    horizontalCrossOut(6);
     return true;
   }
-  if ((board[0] === board[3]) && (board[3] === board[6])) {      //if vertical left column positions equal each other
-    board[0] = '|'
-    board[3] = '|'
-    board[6] = '|'
+  if (leftColumnWin()) {      
+    verticalCrossOut(0);
     return true;
   }
-  if ((board[1] === board[4]) && (board[4] === board[7])) {      //if vertical middle column positions equal each other
-    board[1] = '|'
-    board[4] = '|'
-    board[7] = '|'
+  if (middleColumnCrossOut()) {     
+    verticalCrossOut(1);
     return true;
   }
-  if ((board[2] === board[5]) && (board[5] === board[8])) {      //if vertical right column positions equal each other
-    board[2] = '|'
-    board[5] = '|'
-    board[8] = '|'
+  if (rightColumnCrossOut()) {      
+    verticalCrossOut(2);
     return true;
   }
-  if ((board[0] === board[4]) && (board[4] === board[8])) {      //if diagonal top left to bottom right positions equal each other
+  if (topLeftBottomRightCrossOut()) {      
     board[0] = '\\'
     board[4] = '\\'
     board[8] = '\\'
     return true;
   }
-  if ((board[6] === board[4]) && (board[4] === board[2])) {      //if diagonal top right to bottom left positions equal each other
+  if (topRightBottomLeftCrossOut()) {     
     board[6] = '/'
     board[4] = '/'
     board[2] = '/'
@@ -210,9 +205,55 @@ function checkVictory() {
 }
 
 /**
+* These functions cross out the winning combination
+*/
+function horizontalCrossOut(index) {
+  board[index] = '-';
+  board[index+1] = '-';
+  board[index+2] = '-';
+}
+
+function topRowWin() {
+  return (board[0] === board[1]) && (board[1] === board[2]);
+}
+
+function middleRowWin() {
+  return (board[3] === board[4]) && (board[4] === board[5]);
+}
+
+function bottomRowWin() {
+  return (board[6] === board[7]) && (board[7] === board[8]);
+}
+
+function verticalCrossOut(index) {
+  board[index] = '|';
+  board[index+3] = '|';
+  board[index+6] = '|';
+}
+
+function leftColumnWin() {
+  return (board[0] === board[3]) && (board[3] === board[6]);
+}
+
+function middleColumnCrossOut() {
+  return (board[1] === board[4]) && (board[4] === board[7]);
+}
+
+function rightColumnCrossOut() {
+  return (board[2] === board[5]) && (board[5] === board[8]);
+}
+
+function topRightBottomLeftCrossOut() {
+  return (board[6] === board[4]) && (board[4] === board[2]);
+}
+
+function topLeftBottomRightCrossOut() {
+  return (board[0] === board[4]) && (board[4] === board[8]);
+}
+
+/**
 * Checks if input from the user is valid for game play.
 */
-
 function isEntryValid(text) {
   let regex1 = /[1-9]/
 
@@ -232,8 +273,8 @@ function isEntryValid(text) {
 * Random selection from an array of remaing boxes or moves.
 */
 
-function getRandom(remainingMoves) {
-  let ranSelection = remainingMoves[Math.floor(Math.random() * remainingMoves.length)];
+function getRandom(availableSpace) {
+  let ranSelection = availableSpace[Math.floor(Math.random() * availableSpace.length)];
   return ranSelection;
 }
 
@@ -241,13 +282,16 @@ function getRandom(remainingMoves) {
 * Checks if input from the user is valid regarding whether they want two player or play against the computer.
 */
 
-function isPlayerNumberValid(oneOrTwo) {
+function isPlayerNumberValid(userSelectionOneOrTwo) {
   let regex2 = /[1-2]/
 
-  if (!oneOrTwo.match(regex2)) {
+  if (!userSelectionOneOrTwo.match(regex2)) {
     console.log("That is not a valid entry. Please try again.");
     return false;
   } else {
     return true;
   }
 }
+
+console.log("Tic Tac Toe, three in a row!!");
+startGamePlay();
