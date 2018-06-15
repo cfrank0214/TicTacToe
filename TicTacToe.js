@@ -13,15 +13,13 @@ let curPlayName = '';
 let xName = '';
 let yName = '';
 
-console.log("Tic Tac Toe, three in a row!!");
-menu();
 
 /**
 * Console based menu for user to select whether they want to play
 * a two player game or against the computer.
 */
 
-function menu() {
+function startGamePlay() {
   ///1 or 2 player?
   console.log("Would you like to play a one or two player game? (Enter 1 or 2)");
   process.stdin.once('data', (oneOrTwo) => {
@@ -47,7 +45,7 @@ function menu() {
 
       })
     } else {
-      menu()
+      startGamePlay()
     }
 
   })
