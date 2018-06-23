@@ -83,7 +83,7 @@ function humansTurn(event) {
   board[currentBox - 1] = playerSymbol;
   availableSpace = availableSpace.filter(item => item !== currentBox)
   printBoard(board);
-  proccesTurn(currentPlayer);
+  processTurn(currentPlayer);
 }
 
 function computersTurn() {
@@ -92,23 +92,23 @@ function computersTurn() {
   board[board.indexOf(ranSelection)] = 'O';
   availableSpace = availableSpace.filter(item => item !== ranSelection)
   printBoard(board);
-  proccesTurn(currentPlayer);
+  processTurn(currentPlayer);
 }
 
 /**
  * Fuction where one players plays against the computer.
  * for now the computer chooses random space from an array of remaining spaces
  */
-function proccesTurn() {
+function processTurn() {
   if (checkVictory()) {
     say(currentPlayer + ' won!!');
-    numberOfPlayers = 3;
+    numberOfPlayers = 99; // Need a better way to end the game!
 
   }
   turnCount++;
   if (turnCount > 9) {
     say('It is a tie!!');
-    numberOfPlayers = 3;
+    numberOfPlayers = 99; // Need a better way to end the game!
   } else {
     if (onePlayerComputerTurn()) {
       computersTurn();
@@ -133,22 +133,17 @@ function proccesTurn() {
 }
 
 function twoPlayerXsTurn() {
-
   return numberOfPlayers === 2 && turnCount % 2 !== 0;
 }
 
 function twoPlayerOsTurn() {
-
   return numberOfPlayers === 2 && turnCount % 2 === 0;
 }
 
 function onePlayerHumanTurn() {
-
   return numberOfPlayers === 1 && turnCount % 2 !== 0;
 }
-
 function onePlayerComputerTurn() {
-
   return numberOfPlayers === 1 && turnCount % 2 === 0;
 }
 
