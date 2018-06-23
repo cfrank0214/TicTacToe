@@ -1,0 +1,36 @@
+
+h1 {
+    color: #444;
+}
+body {
+    background-color: aqua;
+}
+
+pre {
+    border-width: 5px; 
+}
+.wrapper {
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    grid-gap: 10px;
+    background-color: aqua;
+    color: #444;
+  }
+  
+  .box {
+    background-color: #444;
+    color: aqua;
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 150%;
+  }
+
+  /* Style the active class (and buttons on mouse-over) */
+ .box:hover {
+    background-color: #666;
+    color: white;
+  }
+
+  .hidden { 
+      display: none;
+  }
