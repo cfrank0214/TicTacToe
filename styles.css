@@ -1,8 +1,13 @@
+
 h1 {
     color: #444;
 }
 body {
     background-color: aqua;
+}
+
+pre {
+    border-width: 5px; 
 }
 .wrapper {
     display: grid;
@@ -24,4 +29,8 @@ body {
  .box:hover {
     background-color: #666;
     color: white;
+  }
+
+  .hidden { 
+      display: none;
   }
