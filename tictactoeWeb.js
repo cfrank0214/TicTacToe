@@ -4,7 +4,7 @@
  * @author chris.frank michael.felix tim.rose
  */
 
-let board = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+let board = ['-', '-', '-', '-', '-', '-', '-', '-', '-'];
 let availableSpace = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 let turnCount = 1;
@@ -27,9 +27,7 @@ let cells = document.getElementsByClassName("box");
 * Gets page ready to play game
 */
 function startGamePlay() {
-  for (var box of cells) {
-    box.addEventListener("click", humansTurn);  // Adds Event listeners to each grid cell. 
-  }
+
   say("Would you like to play against the computer or two player game?");
   printBoard(board);
 }
@@ -39,7 +37,7 @@ function startGamePlay() {
  */
 function printBoard(board) {
   for (var box of cells) {
-    box.textContent = board[box.id - 1];
+    box.innerHTML = board[box.id - 1];
   }
 }
 
@@ -54,12 +52,12 @@ function say(message) {
  * Updates UI based on 1 or 2 player Game.
  */
 function checkPlayers() {
+  playerXNameElement.className = ''
   if (onePlayer.checked) {
-    playerXNameElement.className = ''
     playerONameElement.className = 'hidden'
+    numberOfPlayers = 1
   }
   else if (twoPlayers.checked) {
-    playerXNameElement.className = ''
     playerONameElement.className = ''
     numberOfPlayers = 2
   }
@@ -69,13 +67,22 @@ function checkPlayers() {
  * Sets varialbes like player names and number of players. 
  */
 function submitButton() {
+  for (var box of cells) {
+    box.addEventListener("click", humansTurn);  // Adds Event listeners to each grid cell. 
+  }
   playerXName = document.querySelector('#playerXName input').value
   playerOName = document.querySelector('#playerOName input').value
-  playerXNameElement.className = 'hidden'
-  playerONameElement.className = 'hidden'
-  numberOfPlayersElement.className = 'hidden'
-  submitButtonElement.className = 'hidden'
-  say(playerXName + ' please choose your next move. Choose one of the remaining numbers.')
+  if (playerXName === '') {
+    say('Player one please enter your name.')
+  } else {
+    currentPlayer = playerXName
+    playerXNameElement.className = 'hidden'
+    playerONameElement.className = 'hidden'
+    numberOfPlayersElement.className = 'hidden'
+    submitButtonElement.className = 'hidden'
+    say(playerXName + ' please choose your next move. Choose one of the remaining numbers.')
+  }
+
 }
 
 function humansTurn(event) {
@@ -89,7 +96,7 @@ function humansTurn(event) {
 function computersTurn() {
   currentPlayer = 'The Computer'
   ranSelection = getRandom(availableSpace);
-  board[board.indexOf(ranSelection)] = 'O';
+  board[ranSelection - 1] = playerSymbol;
   availableSpace = availableSpace.filter(item => item !== ranSelection)
   printBoard(board);
   processTurn(currentPlayer);
@@ -100,19 +107,19 @@ function computersTurn() {
  * for now the computer chooses random space from an array of remaining spaces
  */
 function processTurn() {
-  if (checkVictory()) {
-    say(currentPlayer + ' won!!');
-    numberOfPlayers = 99; // Need a better way to end the game!
 
+  if (checkVictory()) {
+    setTimeout(function(){ say(currentPlayer + ' won!!'); });
+    
   }
   turnCount++;
-  if (turnCount > 9) {
-    say('It is a tie!!');
-    numberOfPlayers = 99; // Need a better way to end the game!
+
+  if (turnCount > 10) {
+    setTimeout(function(){ say('It is a tie!!'); });
   } else {
     if (onePlayerComputerTurn()) {
+      playerSymbol = 'O'
       computersTurn();
-
     }
     if (onePlayerHumanTurn()) {
       currentPlayer = playerXName;
@@ -179,36 +186,100 @@ function checkVictory() {
 }
 
 function topRowWin() {
-  return (board[0] === board[1]) && (board[1] === board[2]);
+  if ((board[0] === board[1]) && (board[1] === board[2]) && (board[1] === 'X' || board[1] === 'O')) {
+    document.getElementById('1').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('1').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('2').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('2').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('3').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('3').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  };
 }
 
 function middleRowWin() {
-  return (board[3] === board[4]) && (board[4] === board[5]);
+  if ((board[3] === board[4]) && (board[4] === board[5]) && (board[4] === 'X' || board[4] === 'O')) {
+    document.getElementById('4').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('4').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('5').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('5').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('6').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('6').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 function bottomRowWin() {
-  return (board[6] === board[7]) && (board[7] === board[8]);
+  if ((board[6] === board[7]) && (board[7] === board[8]) && (board[7] === 'X' || board[7] === 'O')) {
+    document.getElementById('7').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('7').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('8').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('8').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('9').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('9').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 
 function leftColumnWin() {
-  return (board[0] === board[3]) && (board[3] === board[6]);
+  if ((board[0] === board[3]) && (board[3] === board[6]) && (board[3] === 'X' || board[3] === 'O')) {
+    document.getElementById('1').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('1').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('4').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('4').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('7').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('7').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 function middleColumnWin() {
-  return (board[1] === board[4]) && (board[4] === board[7]);
+  if ((board[1] === board[4]) && (board[4] === board[7]) && (board[4] === 'X' || board[4] === 'O')) {
+    document.getElementById('2').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('2').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('5').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('5').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('8').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('8').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 function rightColumnWin() {
-  return (board[2] === board[5]) && (board[5] === board[8]);
+  if ((board[2] === board[5]) && (board[5] === board[8]) && (board[5] === 'X' || board[5] === 'O')) {
+    document.getElementById('3').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('3').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('6').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('6').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('9').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('9').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 function topRightBottomLeftWin() {
-  return (board[6] === board[4]) && (board[4] === board[2]);
+  if ((board[6] === board[4]) && (board[4] === board[2]) && (board[4] === 'X' || board[4] === 'O')) {
+    document.getElementById('7').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('7').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('5').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('5').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('3').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('3').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 function topLeftBottomRightWin() {
-  return (board[0] === board[4]) && (board[4] === board[8]);
+  if ((board[0] === board[4]) && (board[4] === board[8]) && (board[4] === 'X' || board[4] === 'O')) {
+    document.getElementById('1').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('1').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('5').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('5').style["color"] = 'rgb(7, 7, 7)';
+    document.getElementById('9').style["background-color"] = 'rgb(243, 6, 6)';
+    document.getElementById('9').style["color"] = 'rgb(7, 7, 7)';
+    return true;
+  }
 }
 
 /**

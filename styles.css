@@ -4,6 +4,11 @@ h1 {
 }
 body {
     background-color: aqua;
+    margin: 0 auto;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    text-align: left;
 }
 
 pre {
@@ -20,6 +25,13 @@ pre {
   .box {
     background-color: #444;
     color: aqua;
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 150%;
+  }
+  .winningbox {
+    background-color: rgb(243, 6, 6);
+    color: rgb(7, 7, 7);
     border-radius: 5px;
     padding: 20px;
     font-size: 150%;
